@@ -41,6 +41,22 @@ static uint32_t _atoi(const char* sp) {
     #ifndef TCP_PORT
       #define TCP_PORT 5000
     #endif
+
+    static wl_status_t wifi_last_status = WL_IDLE_STATUS;
+
+    static const char* wifiStatusName(wl_status_t status) {
+      switch (status) {
+        case WL_NO_SHIELD: return "NO_SHIELD";
+        case WL_IDLE_STATUS: return "IDLE";
+        case WL_NO_SSID_AVAIL: return "NO_SSID";
+        case WL_SCAN_COMPLETED: return "SCAN_DONE";
+        case WL_CONNECTED: return "CONNECTED";
+        case WL_CONNECT_FAILED: return "CONNECT_FAILED";
+        case WL_CONNECTION_LOST: return "CONNECTION_LOST";
+        case WL_DISCONNECTED: return "DISCONNECTED";
+        default: return "UNKNOWN";
+      }
+    }
   #elif defined(BLE_PIN_CODE)
     #include <helpers/esp32/SerialBLEInterface.h>
     SerialBLEInterface serial_interface;
@@ -195,7 +211,10 @@ void setup() {
 
 #ifdef WIFI_SSID
   board.setInhibitSleep(true);   // prevent sleep when WiFi is active
+  Serial.printf("[WiFi] Connecting to SSID '%s'...\n", WIFI_SSID);
   WiFi.begin(WIFI_SSID, WIFI_PWD);
+  wifi_last_status = WiFi.status();
+  Serial.printf("[WiFi] Status: %s (%d)\n", wifiStatusName(wifi_last_status), (int)wifi_last_status);
   serial_interface.begin(TCP_PORT);
 #elif defined(BLE_PIN_CODE)
   serial_interface.begin(BLE_NAME_PREFIX, the_mesh.getNodePrefs()->node_name, the_mesh.getBLEPin());
@@ -223,6 +242,17 @@ void setup() {
 }
 
 void loop() {
+#if defined(ESP32) && defined(WIFI_SSID)
+  wl_status_t status = WiFi.status();
+  if (status != wifi_last_status) {
+    wifi_last_status = status;
+    Serial.printf("[WiFi] Status: %s (%d)\n", wifiStatusName(status), (int)status);
+    if (status == WL_CONNECTED) {
+      Serial.printf("[WiFi] IP: %s\n", WiFi.localIP().toString().c_str());
+    }
+  }
+#endif
+
   the_mesh.loop();
   sensors.loop();
 #ifdef DISPLAY_CLASS

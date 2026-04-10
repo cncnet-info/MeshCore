@@ -77,7 +77,7 @@ static const uint8_t D10 = 10;
 
 // Power management boot protection threshold (millivolts)
 // Set to 0 to disable boot protection
-#define PWRMGT_VOLTAGE_BOOTLOCK    3300   // Won't boot below this voltage
+#define PWRMGT_VOLTAGE_BOOTLOCK    2700   // Won't boot below this voltage
 
 // LPCOMP wake configuration (voltage recovery from SYSTEMOFF)
 #define PWRMGT_LPCOMP_AIN           7     // AIN7 = P0.31 = PIN_VBAT
@@ -126,11 +126,16 @@ static const uint8_t A5  = PIN_A5;
 // Wire Interfaces
 #define WIRE_INTERFACES_COUNT   (1)
 
-// #define PIN_WIRE_SDA            (17) // 4 and 5 are used for the sx1262 !
-// #define PIN_WIRE_SCL            (16) // use WIRE1_SDA
+// Use D7/D6 for I2C to keep LoRa SPI pins free.
+#ifndef PIN_WIRE_SDA
+#define PIN_WIRE_SDA            (D7)
+#endif
+#ifndef PIN_WIRE_SCL
+#define PIN_WIRE_SCL            (D6)
+#endif
 
-// static const uint8_t SDA = PIN_WIRE_SDA;
-// static const uint8_t SCL = PIN_WIRE_SCL;
+static const uint8_t SDA = PIN_WIRE_SDA;
+static const uint8_t SCL = PIN_WIRE_SCL;
 
 //#define PIN_WIRE1_SDA           (17)
 //#define PIN_WIRE1_SCL           (16)

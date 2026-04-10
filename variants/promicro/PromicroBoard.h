@@ -12,13 +12,16 @@
 #define P_LORA_SCLK  12 //P1.11 43
 #define P_LORA_MOSI  14 //P1.15 47
 #define SX126X_POWER_EN 21 //P0.13 13
+#ifndef SX126X_RXEN
 #define SX126X_RXEN 2 //P0.17
+#endif
+//#define SX126X_RXEN 2 //P0.17
 #define SX126X_TXEN RADIOLIB_NC
 #define SX126X_DIO2_AS_RF_SWITCH  true
 #define SX126X_DIO3_TCXO_VOLTAGE (1.8f)
 
 #define  PIN_VBAT_READ 17
-#define  ADC_MULTIPLIER   (1.815f) // dependent on voltage divider resistors. TODO: more accurate battery tracking
+#define  ADC_MULTIPLIER   (1.518f) // dependent on voltage divider resistors. TODO: more accurate battery tracking
 
 class PromicroBoard : public NRF52BoardDCDC {
 protected:

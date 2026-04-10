@@ -13,8 +13,8 @@
 
 #define VARIANT_MCK       (64000000ul)
 
-//#define USE_LFXO      // 32.768 kHz crystal oscillator
-#define USE_LFRC    // 32.768 kHz RC oscillator
+#define USE_LFXO      // 32.768 kHz crystal oscillator
+//#define USE_LFRC    // 32.768 kHz RC oscillator
 
 ////////////////////////////////////////////////////////////////////////////////
 // Power
