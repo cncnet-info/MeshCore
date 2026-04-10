@@ -262,7 +262,7 @@ bool TBeamBoard::power_init()
     PMU->disableIRQ(XPOWERS_AXP2101_ALL_IRQ);      //Disable all PMU interrupts
 
     PMU->setChargerConstantCurr(XPOWERS_AXP2101_CHG_CUR_500MA);   //Set battery charging current to 500mA
-    PMU->setChargeTargetVoltage(XPOWERS_AXP2101_CHG_VOL_4V2);     //Set battery charging cutoff voltage to 4.2V
+    PMU->setChargeTargetVoltage(XPOWERS_AXP2101_CHG_VOL_4V1);     //Set battery charging cutoff voltage to 4.2V
 
   }
 
