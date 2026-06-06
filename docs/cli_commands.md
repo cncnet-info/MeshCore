@@ -434,9 +434,21 @@ This document provides an overview of CLI commands that can be sent to MeshCore 
 - `on`: enable power saving
 - `off`: disable power saving
 
-**Default:** `on`
+**Default:** `off`
 
 **Note:** When enabled, device enters sleep mode between radio transmissions
+
+---
+
+#### View or set reboot interval (Repeater and room server)
+**Usage:**
+- `get reboot.interval`
+- `set reboot.interval <hours>`
+
+**Parameters:** 
+- `hours`: 0-255. 0 is disabled
+
+**Default:** `0` (disabled)
 
 ---
 
@@ -751,6 +763,27 @@ This document provides an overview of CLI commands that can be sent to MeshCore 
 
 **Parameters:**
 - `name`: Region name,  or <null> to reset/clear
+
+---
+
+#### View or set the direct path override for the current remote client
+**Usage:**
+- `get outpath`
+- `set outpath <hop1_hex,hop2_hex,...>`
+- `set outpath direct`
+- `set outpath clear`
+- `set outpath flood`
+
+**Parameters:**
+- `hopN_hex`: Hop hash, `2`, `4`, or `6` hex characters. All hops must use the same width.
+
+**Notes:**
+- These commands require remote client context (they target the caller's ACL entry).
+- The path hash size is inferred from the hop hash width.
+- `outpath` overrides the primary direct route used for replies to the caller.
+- `direct` sets a zero-hop direct route for a caller reachable without repeaters.
+- `clear` forgets the current direct path and allows normal path discovery to repopulate it.
+- `flood` forces replies to use flood packets until the client logs in again.
 
 ---
 

@@ -82,7 +82,8 @@ void CommonCLI::loadPrefsInt(FILESYSTEM* fs, const char* filename) {
     file.read((uint8_t *)&_prefs->bridge_channel, sizeof(_prefs->bridge_channel));                 // 135
     file.read((uint8_t *)&_prefs->bridge_secret, sizeof(_prefs->bridge_secret));                   // 136
     file.read((uint8_t *)&_prefs->powersaving_enabled, sizeof(_prefs->powersaving_enabled));       // 152
-    file.read(pad, 3);                                                                             // 153
+    file.read((uint8_t *)&_prefs->reboot_interval, sizeof(_prefs->reboot_interval));               // 153
+    file.read(pad, 2);                                                                             // 154
     file.read((uint8_t *)&_prefs->gps_enabled, sizeof(_prefs->gps_enabled));                       // 156
     file.read((uint8_t *)&_prefs->gps_interval, sizeof(_prefs->gps_interval));                     // 157
     file.read((uint8_t *)&_prefs->advert_loc_policy, sizeof (_prefs->advert_loc_policy));          // 161
@@ -115,6 +116,7 @@ void CommonCLI::loadPrefsInt(FILESYSTEM* fs, const char* filename) {
     _prefs->bridge_channel = constrain(_prefs->bridge_channel, 0, 14);
 
     _prefs->powersaving_enabled = constrain(_prefs->powersaving_enabled, 0, 1);
+    _prefs->reboot_interval = constrain(_prefs->reboot_interval, 0, 255);
 
     _prefs->gps_enabled = constrain(_prefs->gps_enabled, 0, 1);
     _prefs->advert_loc_policy = constrain(_prefs->advert_loc_policy, 0, 2);
@@ -175,7 +177,8 @@ void CommonCLI::savePrefs(FILESYSTEM* fs) {
     file.write((uint8_t *)&_prefs->bridge_channel, sizeof(_prefs->bridge_channel));                 // 135
     file.write((uint8_t *)&_prefs->bridge_secret, sizeof(_prefs->bridge_secret));                   // 136
     file.write((uint8_t *)&_prefs->powersaving_enabled, sizeof(_prefs->powersaving_enabled));       // 152
-    file.write(pad, 3);                                                                             // 153
+    file.write((uint8_t *)&_prefs->reboot_interval, sizeof(_prefs->reboot_interval));               // 153
+    file.write(pad, 2);                                                                             // 154
     file.write((uint8_t *)&_prefs->gps_enabled, sizeof(_prefs->gps_enabled));                       // 156
     file.write((uint8_t *)&_prefs->gps_interval, sizeof(_prefs->gps_interval));                     // 157
     file.write((uint8_t *)&_prefs->advert_loc_policy, sizeof(_prefs->advert_loc_policy));           // 161
@@ -246,7 +249,7 @@ void CommonCLI::handleCommand(uint32_t sender_timestamp, char* command, char* re
     } else if (memcmp(command, "clock", 5) == 0) {
       uint32_t now = getRTCClock()->getCurrentTime();
       DateTime dt = DateTime(now);
-      sprintf(reply, "%02d:%02d - %d/%d/%d UTC", dt.hour(), dt.minute(), dt.day(), dt.month(), dt.year());
+      sprintf(reply, "%02d:%02d:%02d - %d/%d/%d UTC", dt.hour(), dt.minute(), dt.second(), dt.day(), dt.month(), dt.year());
     } else if (memcmp(command, "time ", 5) == 0) {  // set time (to epoch seconds)
       uint32_t secs = _atoi(&command[5]);
       uint32_t curr = getRTCClock()->getCurrentTime();
@@ -792,6 +795,19 @@ void CommonCLI::handleSetCmd(uint32_t sender_timestamp, char* command, char* rep
       _prefs->adc_multiplier = 0.0f;
       strcpy(reply, "Error: unsupported");
     };
+  } else if (memcmp(config, "reboot.interval ", 16) == 0) {
+    int hours = _atoi(&config[16]);
+    if (hours == 0) {
+      _prefs->reboot_interval = 0;
+      savePrefs();
+      strcpy(reply, "reboot.interval disabled");
+    } else if (hours < 1 || 255 < hours) {
+      strcpy(reply, "Error: interval range is 1-255 hours");
+    } else {
+      _prefs->reboot_interval = hours;
+      savePrefs();
+      sprintf(reply, "OK - reboot.interval set to %d", _prefs->reboot_interval);
+    }
   } else {
     strcpy(reply, "unknown config: ");
   }
@@ -959,6 +975,12 @@ void CommonCLI::handleGetCmd(uint32_t sender_timestamp, char* command, char* rep
 #else
     strcpy(reply, "ERROR: Power management not supported");
 #endif
+  } else if (memcmp(config, "reboot.interval", 15) == 0) {
+    if (_prefs->reboot_interval == 0) {
+      strcpy(reply, "disabled");
+    } else {
+      sprintf(reply, "> %d", (uint8_t)_prefs->reboot_interval);
+    }
   } else {
     sprintf(reply, "??: %s", config);
   }
