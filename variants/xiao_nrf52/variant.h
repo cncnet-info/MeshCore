@@ -128,10 +128,10 @@ static const uint8_t A5  = PIN_A5;
 
 // Use D7/D6 for I2C to keep LoRa SPI pins free.
 #ifndef PIN_WIRE_SDA
-#define PIN_WIRE_SDA            (D7)
+#define PIN_WIRE_SDA            (7)
 #endif
 #ifndef PIN_WIRE_SCL
-#define PIN_WIRE_SCL            (D6)
+#define PIN_WIRE_SCL            (6)
 #endif
 
 static const uint8_t SDA = PIN_WIRE_SDA;

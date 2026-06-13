@@ -21,7 +21,7 @@
 #define SX126X_DIO3_TCXO_VOLTAGE (1.8f)
 
 #define  PIN_VBAT_READ 17
-#define  ADC_MULTIPLIER   (1.518f) // dependent on voltage divider resistors. TODO: more accurate battery tracking
+#define  ADC_MULTIPLIER   (1.808f) // dependent on voltage divider resistors. TODO: more accurate battery tracking
 
 class PromicroBoard : public NRF52BoardDCDC {
 protected:
