@@ -288,6 +288,7 @@ void Dispatcher::checkSend() {
   if (!millisHasNowPassed(next_tx_time)) return;
   if (_radio->isReceiving()) {
     if (cad_busy_start == 0) {
+      n_cad_busy_events++;
       cad_busy_start = _ms->getMillis();   // record when CAD busy state started
     }
 

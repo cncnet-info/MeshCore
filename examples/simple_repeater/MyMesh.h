@@ -225,6 +225,7 @@ public:
 
   void saveIdentity(const mesh::LocalIdentity& new_id) override;
   void clearStats() override;
+  uint32_t getChannelBusyCount() override { return getNumCADBusyEvents(); }
 
   void handleCommand(uint32_t sender_timestamp, char* command, char* reply);
   void loop();
